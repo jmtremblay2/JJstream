@@ -1,8 +1,8 @@
 #include "utils.h"
 
-unsigned int charptr_to_unsigned_int_big_endian(char* c){
-    unsigned int x;
-    char* x_char = (char*) &x;
+uint32_t uint8_ptr_to_uint32_big_endian(uint8_t* c){
+    uint32_t x;
+    uint8_t* x_char = (uint8_t*) &x;
     x_char[3] = c[0];
     x_char[2] = c[1];
     x_char[1] = c[2];

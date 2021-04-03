@@ -1,36 +1,74 @@
 #ifndef MPEGTS_PAT
 #define MPEGTS_PAT
 
+#include "mpegts_packet.h"
+
 // https://ecee.colorado.edu/~ecen5653/ecen5653/papers/iso13818-1.pdf
 // page 61
 typedef struct mpegts_pat_program{
-    unsigned int program_number;
+    uint16_t program_number;
     unsigned int reserved;
-    union  {
-        unsigned int network_pid;
-        unsigned int program_map_pid;
-    };
+    // union  {
+    //     uint16_t network_pid;
+    //     uint16_t program_map_pid;
+    // };
+    uint16_t data;
 } mpegts_pat_program;
 
 typedef struct mpegts_pat {
-    unsigned int table_id;
-    unsigned int section_syntax_indicator;
-    unsigned int zero;
-    unsigned int reserved1;
-    unsigned int section_length;
-    unsigned int transport_stream_id;
-    unsigned int reserved2;
-    unsigned int version_number;
-    unsigned int current_next_indicator;
-    unsigned int section_number;
-    unsigned int last_section_number;
-    unsigned int num_sections;
+    uint8_t table_id;
+    uint8_t section_syntax_indicator;
+    uint8_t zero;
+    uint8_t reserved1;
+    uint16_t section_length;
+    int16_t transport_stream_id;
+    uint8_t reserved2;
+    uint8_t version_number;
+    uint8_t current_next_indicator;
+    uint8_t section_number;
+    uint8_t last_section_number;
+    size_t num_sections;
     mpegts_pat_program* programs;
-    unsigned crc_32;
+    uint32_t crc_32;
 } mpegts_pat;
 
 mpegts_pat* create_pat_from_ts_packet(char* ts_packet);
+mpegts_pat* read_pat(ts_packet* ts);
 void print_pat(mpegts_pat* p);
 void delete_pat(mpegts_pat* p);
+
+typedef struct mpegts_stream{
+    uint8_t stream_type;
+    uint16_t elementary_pid;
+    uint16_t es_info_length;
+    char* descriptor;
+    // es info for now we don't save it;
+} mpegts_stream; 
+
+typedef struct mpegts_pmt{
+    uint8_t table_id;
+    uint8_t section_syntax_indicator;
+    // zero
+    // reserved
+    uint16_t section_length;
+    uint16_t program_number;
+    //reserved
+    uint8_t version;
+    uint8_t current_next_indicator;
+    uint8_t section_number;
+    uint8_t last_section_number;
+    // reserved
+    uint16_t pcr_pid;
+    //reserved
+    uint16_t program_info_length;
+    size_t num_streams;
+    size_t num_streams_allocated;
+    mpegts_stream* streams;
+    uint32_t crc_32;
+} mpegts_pmt;
+
+mpegts_pmt* read_pmt(ts_packet* ts);
+void print_pmt(mpegts_pmt* p);
+void delete_pmt(mpegts_pmt* p);
 
 #endif

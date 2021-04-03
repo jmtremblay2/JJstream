@@ -7,4 +7,4 @@ make
 ./jjstream /home/jm/Videos/video.ts print_pids | sort | uniq
 
 # print the PAT packets
-./jjstream /home/jm/Videos/video.ts print_pat_packets print_formatted_pat max_print 1000
+./jjstream ~/Videos/video.ts print_pat_packets print_formatted_pat max_print 1000

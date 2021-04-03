@@ -5,81 +5,66 @@
 #include "mpegts_header.h"
 #include "mpegts_packet.h"
 #include "mpegts_pat.h"
-#include "utils.h"
+#include "args.h"
 
-#define BUFFER_SIZE 10000000
-
-int find_in_argv(char* s, int argc, char** argv){
-    for(int i = 2; i < argc; ++i)
-        if( 0 == strcmp(s, argv[i])){
-            printf("found %s\n", s);
-            return 1;
-        }     
-    return 0;
-}
-
-unsigned int find_int_in_argv(char* s, int argc, char** argv){
-    for(int i = 2; i < argc; ++i)
-        if( 0 == strcmp(s, argv[i])){
-            printf("found %s\n", s);
-            return (unsigned int) atoi(argv[i+1]);
-        }     
-    return 0x7FFFFFFF;
-}
-
+#define BUFFER_MAX 1000000
+#define READ_MORE 500
+#define PAT_PID 0
 
 int main(int argc, char** argv){
-    size_t bytes_read = 0;
-    size_t packet_size = 188;
-    size_t max_packets = 1000;
+    jjstream_args args = get_args(argc, argv);
 
-    char* fname = argv[1];//"/home/jm/Videos/video.ts"
+    mpegts_reader_data rd;
+    ts_packet ts;
+    init_mpegts_reader_data(args.fname, &rd, BUFFER_MAX, READ_MORE);
 
-    char mode = argv[2][0];
-    int print_packets = find_in_argv("print_packets", argc, argv);
-    int print_pids = find_in_argv("print_pids", argc, argv);
-    int print_header = find_in_argv("print_header", argc, argv);
-    int print_pat_packets = find_in_argv("print_pat_packets", argc, argv);
-    int print_formatted_pat = find_in_argv("print_formatted_pat", argc, argv);
+    int printed_pat = 0, printed_pmt = 0;
+    uint16_t pmt_pid=0xFFFF;
+    uint16_t klv_pid=0xFFFF;
+    while(has_next_ts_packet(&rd)){
 
-    unsigned int max_print = find_int_in_argv("max_print", argc, argv);
-    //int print_header = find_in_argv("print_header", argc, argv);
+        get_next_ts_packet(&rd, &ts);
+        //print_ts_packet(&ts, 0, 0);        
+        
+        if(ts.h.pid == PAT_PID){
+            //print_ts_packet(&ts, 0, 0);
+            mpegts_pat* p = read_pat(&ts);
+            if(! printed_pat){
+                printed_pat = 1;
+                printf("**I found the PAT:\n");
+                print_pat(p);
 
-    FILE* f = fopen(fname,"r");
-    unsigned char buffer[max_packets * packet_size];
-    mpegts_header h;
-    unsigned int counter = 0;
-    do {
-        // read packets
-        bytes_read = fread(buffer, sizeof(unsigned char), max_packets * packet_size, f);
-        double packets_read = ((double) bytes_read) / packet_size;
-        int packets_read_int = bytes_read / packet_size;
+                pmt_pid = p->programs[0].data;
+                printf("**using pat PID: %x\n", pmt_pid);
+            }
+            delete_pat(p);
+        }
+        if(ts.h.pid == pmt_pid){
+            if(! printed_pmt){
+                printed_pmt = 1;
+                printf("**I found the PMT:\n");
+                //print_ts_packet(&ts, 0, 0);
+                mpegts_pmt *pmt = read_pmt(&ts);
+                print_pmt(pmt);
+                delete_pmt(pmt);
 
-        for(int i = 0; i < packets_read_int; ++i){
-            counter++;
-            read_ts_packet_header(&h, buffer +(188*i));
+                for(int i = 0; i < pmt->num_streams; ++i){
+                    uint8_t stream_type = pmt->streams[i].stream_type;
+                    if(stream_type == 6)
+                        klv_pid = pmt->streams[i].elementary_pid;
+                }
 
-            if(print_packets)
-                print_ts_packet(buffer +(188*i), 188);
-            if(print_header)
-                print_ts_packet_header(&h);
-            if(print_pids)    
-                printf("%x\n", h.pid);
-
-            if(0 == h.pid){
-                if(print_pat_packets)
-                    print_ts_packet(buffer +(188*i), 188);
-                mpegts_pat *p = create_pat_from_ts_packet(buffer+(188*i));
-                if(print_formatted_pat)
-                    print_pat(p);
-                delete_pat(p);
+                printf("using the following pid for KLV: %x\n", klv_pid);
             }
         }
-        if(counter > max_print) break;
-    } while(0 < bytes_read);
+        if(ts.h.pid == klv_pid){
+            printf("**I found the folowing telemetry:\n");
+            print_ts_packet(&ts, 0, 0);
+            break;
+        }
 
-
-    // fclose(f);
-    // return 0;
+    }
+    close_mpegts_reader_data(&rd);
+    return 0;
 }
 
