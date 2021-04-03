@@ -1,5 +1,9 @@
 {
     "files.associations": {
-        "tswrite_defns.h": "c"
-    }
+        "tswrite_defns.h": "c",
+        "stdio.h": "c",
+        "mpegts_header.h": "c",
+        "mpegts_packet.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }
