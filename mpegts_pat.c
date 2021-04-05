@@ -166,8 +166,8 @@ void print_pmt(mpegts_pmt* pmt){
     
     printf("streams:\n");
     for(int i = 0; i < pmt->num_streams; ++i){
-        printf("-->streams[%d]",i);
-        printf("---->stream type: %d\n", pmt->streams[i].stream_type);
+        printf("-->streams[%d]\n",i);
+        printf("---->stream type: %x\n", pmt->streams[i].stream_type);
         printf("---->elementary pid: %x\n", pmt->streams[i].elementary_pid);
         printf("---->stream info length: %d\n", pmt->streams[i].es_info_length);
         printf("---->stream descriptor: %s\n", pmt->streams[i].descriptor);

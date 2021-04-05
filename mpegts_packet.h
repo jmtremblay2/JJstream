@@ -18,6 +18,8 @@ typedef struct ts_packet {
 } ts_packet;
 
 typedef struct mpegts_reader_data {
+    char file_name[200];
+
     FILE* f;
     int eof;
     int started_reading;

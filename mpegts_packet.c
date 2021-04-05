@@ -9,6 +9,7 @@
 #define PACKET_SIZE 188
 
 void init_mpegts_reader_data(char* filein, mpegts_reader_data* rd, size_t buffer_max, size_t read_more){
+    memcpy(rd->file_name, filein, 199);
     rd->read_more = read_more;
     rd->f = fopen(filein,"r");
     if(NULL == rd->f){
@@ -87,7 +88,8 @@ void get_next_ts_packet(mpegts_reader_data* rd, ts_packet* ts){
         exit(1);
     }
     if(rd->started_reading == 0){
-        rd->current_offset += 0;
+        //rd->current_offset += 0;
+        rd->current_offset = 0;
         rd->started_reading = 1;
     }
     else {
@@ -97,7 +99,10 @@ void get_next_ts_packet(mpegts_reader_data* rd, ts_packet* ts){
     ts->header_raw = uint8_ptr_to_uint32_big_endian(rd->buffer + rd->current_offset);        
     ts->raw_data = rd->buffer + rd->current_offset;
     read_ts_packet_header(&ts->h, ts->raw_data);
-    ts->payload = ts->raw_data + 4 + ts->h.adaptation.adaptation_length;
+    // if(ts->h.adaptation.adaptation_length != 1){
+    //     printf("found adaptation\n");
+    // }
+    ts->payload = ts->raw_data + 4 + 1;//ts->h.adaptation.adaptation_length;
 
     // uint8_t next_header = rd->buffer[rd->current_offset];
     // if(next_header != 0x47){
