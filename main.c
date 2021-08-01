@@ -285,15 +285,20 @@ int main(int argc, char** argv){
     init_mpegts_reader_data(args.fname, &rd, BUFFER_MAX, READ_MORE);
 
     mpegts_pat *pat = find_pat(&rd);
+    printf("*****PAT******\n");
     print_pat(pat);
+    printf("***********************\n");
+    
     uint16_t pmt_pid = pat->programs[0].data;
 
     mpegts_pmt *pmt = find_pmt(&rd, pmt_pid);
+    printf("*****PMT******\n");  
     print_pmt(pmt);
+    printf("***********************\n");
 
-    uint16_t klv_pid = find_klv_pid(&rd, pmt);
-    klv_loop(&rd, klv_pid);
-    close_mpegts_reader_data(&rd);
+    // uint16_t klv_pid = find_klv_pid(&rd, pmt);
+    // klv_loop(&rd, klv_pid);
+    // close_mpegts_reader_data(&rd);
     return 0;
 }
    

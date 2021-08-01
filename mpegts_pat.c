@@ -58,7 +58,7 @@ mpegts_pat* read_pat(ts_packet* ts){
 
 void print_pat(mpegts_pat* p){
     printf("table_id: %d\n", p->table_id);
-    printf("section_syntax: %x\n", p->section_syntax_indicator);
+    printf("section_syntax: 0x%x\n", p->section_syntax_indicator);
     //printf("zero: %x\n", p->zero);
     printf("section_length: %d\n", p->section_length);
     printf("transport stream id: %d\n", p->transport_stream_id);
@@ -74,7 +74,7 @@ void print_pat(mpegts_pat* p){
         else
             printf("-->program map pid: %d\n", p->programs[i].data);
     }
-    printf("crc: %x\n", p->crc_32);
+    printf("crc: 0x%x\n", p->crc_32);
     return;
 }
 
@@ -153,7 +153,7 @@ mpegts_pmt* read_pmt(ts_packet* ts){
 }
 void print_pmt(mpegts_pmt* pmt){
     printf("table_id: %d\n", pmt->table_id);
-    printf("section_syntax: %x\n", pmt->section_syntax_indicator);
+    printf("section_syntax: 0x%x\n", pmt->section_syntax_indicator);
     //printf("zero: %x\n", p->zero);
     printf("section_length: %d\n", pmt->section_length);
     printf("program number: %d\n", pmt->program_number);
@@ -167,8 +167,8 @@ void print_pmt(mpegts_pmt* pmt){
     printf("streams:\n");
     for(int i = 0; i < pmt->num_streams; ++i){
         printf("-->streams[%d]\n",i);
-        printf("---->stream type: %x\n", pmt->streams[i].stream_type);
-        printf("---->elementary pid: %x\n", pmt->streams[i].elementary_pid);
+        printf("---->stream type: 0x%x\n", pmt->streams[i].stream_type);
+        printf("---->elementary pid: 0x%x\n", pmt->streams[i].elementary_pid);
         printf("---->stream info length: %d\n", pmt->streams[i].es_info_length);
         printf("---->stream descriptor: %s\n", pmt->streams[i].descriptor);
     }

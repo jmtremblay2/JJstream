@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${fileDirname}/jjstream",
             "args": [
-                "~/Videos/video.ts",
+                "~/Downloads/GDMS_EOW_Marina_clip_101_sync_metadata_5_byte_pad.ts",
                 "print_pat_packets",
                 "print_formatted_pat",
                 "max_print",
