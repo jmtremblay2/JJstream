@@ -2,6 +2,7 @@
 #define MPEGTS_PAT
 
 #include "mpegts_packet.h"
+#define PAT_PID 0
 
 // https://ecee.colorado.edu/~ecen5653/ecen5653/papers/iso13818-1.pdf
 // page 61
@@ -70,5 +71,7 @@ typedef struct mpegts_pmt{
 mpegts_pmt* read_pmt(ts_packet* ts);
 void print_pmt(mpegts_pmt* p);
 void delete_pmt(mpegts_pmt* p);
+
+mpegts_pat* find_pat(mpegts_reader_data* rd);
 
 #endif

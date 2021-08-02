@@ -188,3 +188,16 @@ void delete_pmt(mpegts_pmt* pmt){
         free(pmt);
     return;
 }
+
+mpegts_pat* find_pat(mpegts_reader_data* rd){
+    ts_packet ts;
+    while(has_next_ts_packet(rd)){
+        get_next_ts_packet(rd, &ts);
+        if(ts.h.pid == PAT_PID){
+            mpegts_pat* p = read_pat(&ts);
+            return p;
+        }
+    }
+    fprintf(stderr, "could not find PAT\n");
+    return NULL;
+}

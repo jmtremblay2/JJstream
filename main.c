@@ -9,7 +9,6 @@
 
 #define BUFFER_MAX 1000000
 #define READ_MORE 500
-#define PAT_PID 0
 typedef struct misb_telemetry_raw {
     uint16_t Checksum; //1
     uint64_t UNIX_Time_Stamp; //2
@@ -125,18 +124,6 @@ uint8_t misb_key[] = {0x06, 0x0E, 0x2B, 0x34,
                       0x0E, 0x01, 0x03, 0x01,
                       0x01, 0x00, 0x00, 0x00};
 
-mpegts_pat* find_pat(mpegts_reader_data* rd){
-    ts_packet ts;
-    while(has_next_ts_packet(rd)){
-        get_next_ts_packet(rd, &ts);
-        if(ts.h.pid == PAT_PID){
-            mpegts_pat* p = read_pat(&ts);
-            return p;
-        }
-    }
-    fprintf(stderr, "could not find PAT\n");
-    return NULL;
-}
 
 mpegts_pmt* find_pmt(mpegts_reader_data* rd, uint16_t pmt_pid){
     ts_packet ts;
@@ -284,11 +271,12 @@ int main(int argc, char** argv){
     ts_packet ts;
     init_mpegts_reader_data(args.fname, &rd, BUFFER_MAX, READ_MORE);
 
+
     mpegts_pat *pat = find_pat(&rd);
     printf("*****PAT******\n");
     print_pat(pat);
     printf("***********************\n");
-    
+    return 0;    
     uint16_t pmt_pid = pat->programs[0].data;
 
     mpegts_pmt *pmt = find_pmt(&rd, pmt_pid);
