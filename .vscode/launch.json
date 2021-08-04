@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             //"program": "${fileDirname}/jjstream",
-            "program": "${fileDirname}/../jjstream",
+            "program": "/home/jm/programming/JJstream/jjstream",
             "args": [
                 "uhaul.ts",
                 "print_pat_packets",
@@ -17,7 +17,11 @@
                 "max_print",
                 "1000",
                 "output_folder",
-                "/home/jm/jjstream_output"
+                "/home/jm/jjstream_output",
+                "action",
+                "find_telemetry",
+                "telemetry_pid",
+                "257"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

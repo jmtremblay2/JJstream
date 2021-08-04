@@ -22,3 +22,18 @@ void discover_tables(mpegts_reader_data* rd, const char* output_folder){
     free(pat_file_name);
     return;
 }
+
+void find_telemetry(mpegts_reader_data* rd, const char* output_folder, uint32_t telemetry_pid){
+    ts_packet ts;
+    while(has_next_ts_packet(rd)){
+        get_next_ts_packet(rd, &ts);
+        //print_ts_packet(&ts, 0, 0); 
+        //printf("%d\n", ts.h.pid);       
+        if(ts.h.pid == telemetry_pid){
+            printf("**I found the folowing telemetry:\n");
+            print_ts_packet(&ts, 0, 0);
+            break;
+        }
+    }
+    return;
+}
