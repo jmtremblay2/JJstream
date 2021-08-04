@@ -6,6 +6,7 @@
 #include "mpegts_packet.h"
 #include "mpegts_pat.h"
 #include "args.h"
+#include "features.h"
 
 #define BUFFER_MAX 1000000
 #define READ_MORE 500
@@ -125,18 +126,7 @@ uint8_t misb_key[] = {0x06, 0x0E, 0x2B, 0x34,
                       0x01, 0x00, 0x00, 0x00};
 
 
-mpegts_pmt* find_pmt(mpegts_reader_data* rd, uint16_t pmt_pid){
-    ts_packet ts;
-    while(has_next_ts_packet(rd)){
-        get_next_ts_packet(rd, &ts);
-        if(ts.h.pid == pmt_pid){
-            mpegts_pmt *pmt = read_pmt(&ts);
-            return pmt;
-        }
-    }
-    fprintf(stderr, "could not find PMT\n");
-    return NULL;
-}
+
 
 int contains_uint16(uint16_t *list, uint16_t value, size_t size){
     for(int i = 0; i < size; ++i)
@@ -271,18 +261,7 @@ int main(int argc, char** argv){
     ts_packet ts;
     init_mpegts_reader_data(args.fname, &rd, BUFFER_MAX, READ_MORE);
 
-
-    mpegts_pat *pat = find_pat(&rd);
-    printf("*****PAT******\n");
-    print_pat(pat);
-    printf("***********************\n");
-    return 0;    
-    uint16_t pmt_pid = pat->programs[0].data;
-
-    mpegts_pmt *pmt = find_pmt(&rd, pmt_pid);
-    printf("*****PMT******\n");  
-    print_pmt(pmt);
-    printf("***********************\n");
+    discover_tables(&rd, args.output_folder);
 
     // uint16_t klv_pid = find_klv_pid(&rd, pmt);
     // klv_loop(&rd, klv_pid);

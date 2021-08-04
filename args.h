@@ -9,6 +9,7 @@ typedef struct jjstream_args{
     int print_pat_packets;
     int print_formatted_pat;
     unsigned int max_print;
+    char* output_folder;
 } jjstream_args;
 
 jjstream_args get_args(int argc, char** argv);

@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 #include <stdint.h>
+#include <stddef.h>
+#include <stdio.h>
 
 typedef struct ts_packet {
     uint32_t header_raw;

@@ -35,7 +35,7 @@ typedef struct mpegts_pat {
 
 mpegts_pat* create_pat_from_ts_packet(char* ts_packet);
 mpegts_pat* read_pat(ts_packet* ts);
-void print_pat(mpegts_pat* p);
+void print_pat(mpegts_pat* p, const char* output_file_name);
 void delete_pat(mpegts_pat* p);
 
 typedef struct mpegts_stream{
@@ -69,9 +69,11 @@ typedef struct mpegts_pmt{
 } mpegts_pmt;
 
 mpegts_pmt* read_pmt(ts_packet* ts);
-void print_pmt(mpegts_pmt* p);
+void print_pmt(mpegts_pmt* p, const char *output_file_name);
 void delete_pmt(mpegts_pmt* p);
 
 mpegts_pat* find_pat(mpegts_reader_data* rd);
+mpegts_pmt* find_pmt(mpegts_reader_data* rd, uint16_t pmt_pid);
+
 
 #endif

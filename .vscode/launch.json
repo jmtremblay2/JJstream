@@ -8,14 +8,16 @@
             "name": "gcc-9 - Build and debug active file",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}/jjstream",
+            //"program": "${fileDirname}/jjstream",
+            "program": "${fileDirname}/../jjstream",
             "args": [
-                #"~/Downloads/GDMS_EOW_Marina_clip_101_sync_metadata_5_byte_pad.ts",
                 "uhaul.ts",
                 "print_pat_packets",
                 "print_formatted_pat",
                 "max_print",
-                "1000"
+                "1000",
+                "output_folder",
+                "/home/jm/jjstream_output"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

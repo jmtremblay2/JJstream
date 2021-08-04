@@ -56,25 +56,33 @@ mpegts_pat* read_pat(ts_packet* ts){
     return p;
 }
 
-void print_pat(mpegts_pat* p){
-    printf("table_id: %d\n", p->table_id);
-    printf("section_syntax: 0x%x\n", p->section_syntax_indicator);
+void print_pat(mpegts_pat* p, const char *output_file_name){
+    FILE *out_file = fopen(output_file_name,"w");
+    fprintf(out_file,"{\n");        
+    fprintf(out_file, "\"table_id\": \"%d\",\n", p->table_id);
+    fprintf(out_file, "\"section_syntax\": \"0x%x\",\n", p->section_syntax_indicator);
     //printf("zero: %x\n", p->zero);
-    printf("section_length: %d\n", p->section_length);
-    printf("transport stream id: %d\n", p->transport_stream_id);
-    printf("version number: %d\n",p->version_number);
-    printf("current next indicator: %d\n",p->current_next_indicator);
+    fprintf(out_file, "\"section_length\": \"%d\",\n", p->section_length);
+    fprintf(out_file, "\"transport stream id\": \"%d\",\n", p->transport_stream_id);
+    fprintf(out_file, "\"version number\": \"%d\",\n",p->version_number);
+    fprintf(out_file, "\"current next indicator\": \"%d\",\n",p->current_next_indicator);
 
-    printf("section number: %d\n", p->section_number);
-    printf("last section number: %d\n", p->last_section_number);
-    printf("programs:\n");
+    fprintf(out_file, "\"section number\": \"%d\",\n", p->section_number);
+    fprintf(out_file, "\"last section number\": \"%d\",\n", p->last_section_number);
+    fprintf(out_file, "\"programs\":[\n");
     for(int i = 0; i < p->num_sections; ++i){
+        fprintf(out_file,"{\n");        
         if(p->programs[i].program_number == 0)
-            printf("-->network pid: %d\n", p->programs[i].data);
+            fprintf(out_file, "\"network pid\": \"%d\",\n", p->programs[i].data);
         else
-            printf("-->program map pid: %d\n", p->programs[i].data);
+            fprintf(out_file, "\"program map pid\": \"%d\",\n", p->programs[i].data);
+        fprintf(out_file,"}\n,");
     }
-    printf("crc: 0x%x\n", p->crc_32);
+    fprintf(out_file,"]\n,");
+    fprintf(out_file, "\"crc\": \"0x%x\",\n", p->crc_32);
+    fprintf(out_file,"}\n");        
+
+    fclose(out_file);
     return;
 }
 
@@ -151,28 +159,38 @@ mpegts_pmt* read_pmt(ts_packet* ts){
     pmt->crc_32 = uint8_ptr_to_uint32_big_endian(address_of_crc);
     return pmt;
 }
-void print_pmt(mpegts_pmt* pmt){
-    printf("table_id: %d\n", pmt->table_id);
-    printf("section_syntax: 0x%x\n", pmt->section_syntax_indicator);
-    //printf("zero: %x\n", p->zero);
-    printf("section_length: %d\n", pmt->section_length);
-    printf("program number: %d\n", pmt->program_number);
-    printf("version number: %d\n",pmt->version);
-    printf("current next indicator: %d\n",pmt->current_next_indicator);
+void print_pmt(mpegts_pmt* pmt, const char *output_file_name){
+    FILE *out_file = fopen(output_file_name,"w");
 
-    printf("section number: %d\n", pmt->section_number);
-    printf("last section number: %d\n", pmt->last_section_number);
-    printf("pcr pid: %d\n", pmt->pcr_pid);
+    fprintf(out_file, "{\n");
+    fprintf(out_file, "\"table_id\": \"%d\",\n", pmt->table_id);
+    fprintf(out_file, "\"section_syntax\": \"0x%x\",\n", pmt->section_syntax_indicator);
+    //printf("zero: %x\n", p->zero);
+    fprintf(out_file, "\"section_length\": \"%d\",\n", pmt->section_length);
+    fprintf(out_file, "\"program number\": \"%d\",\n", pmt->program_number);
+    fprintf(out_file, "\"version number\": \"%d\",\n",pmt->version);
+    fprintf(out_file, "\"current next indicator\": \"%d\",\n",pmt->current_next_indicator);
+
+    fprintf(out_file, "\"section number\": \"%d\",\n", pmt->section_number);
+    fprintf(out_file, "\"last section number\": \"%d\",\n", pmt->last_section_number);
+    fprintf(out_file, "\"pcr pid\": \"%d\",\n", pmt->pcr_pid);
     
-    printf("streams:\n");
+    fprintf(out_file, "\"streams\": [\n");
     for(int i = 0; i < pmt->num_streams; ++i){
-        printf("-->streams[%d]\n",i);
-        printf("---->stream type: 0x%x\n", pmt->streams[i].stream_type);
-        printf("---->elementary pid: 0x%x\n", pmt->streams[i].elementary_pid);
-        printf("---->stream info length: %d\n", pmt->streams[i].es_info_length);
-        printf("---->stream descriptor: %s\n", pmt->streams[i].descriptor);
+        fprintf(out_file, "{\n");        
+        fprintf(out_file, "\"streams_id\": \"%d\",\n",i);
+        fprintf(out_file, "\"stream type\": \"0x%x\",\n", pmt->streams[i].stream_type);
+        fprintf(out_file, "\"elementary pid\": \"0x%x\",\n", pmt->streams[i].elementary_pid);
+        fprintf(out_file, "\"stream info length\": \"%d\",\n", pmt->streams[i].es_info_length);
+        fprintf(out_file, "\"stream descriptor\": \"%s\",\n", pmt->streams[i].descriptor);
+        fprintf(out_file, "},\n");
     }
-    printf("crc: %x\n", pmt->crc_32);
+    fprintf(out_file, "],\n");
+    fprintf(out_file, "\"crc\": \"%x\"\n", pmt->crc_32);
+
+    fprintf(out_file, "}\n");
+
+    fclose(out_file);
     return;
 
 }
@@ -199,5 +217,18 @@ mpegts_pat* find_pat(mpegts_reader_data* rd){
         }
     }
     fprintf(stderr, "could not find PAT\n");
+    return NULL;
+}
+
+mpegts_pmt* find_pmt(mpegts_reader_data* rd, uint16_t pmt_pid){
+    ts_packet ts;
+    while(has_next_ts_packet(rd)){
+        get_next_ts_packet(rd, &ts);
+        if(ts.h.pid == pmt_pid){
+            mpegts_pmt *pmt = read_pmt(&ts);
+            return pmt;
+        }
+    }
+    fprintf(stderr, "could not find PMT\n");
     return NULL;
 }
