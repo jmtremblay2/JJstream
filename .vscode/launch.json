@@ -19,7 +19,8 @@
                 "output_folder",
                 "/home/jm/jjstream_output",
                 "action",
-                "find_telemetry",
+                "decode_telemetry",
+                //"find_telemetry",
                 "telemetry_pid",
                 "257"
             ],

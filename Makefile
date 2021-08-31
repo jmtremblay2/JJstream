@@ -16,11 +16,14 @@ utils.o: utils.h utils.c
 features.o: features.h features.c
 	gcc -g -c features.c -o features.o
 
+misb.o: misb.h misb.c
+	gcc -g -c misb.c -o misb.o
+
 main.o: main.c
 	gcc -g -c main.c -o main.o
 
-jjstream: main.o mpegts_header.o utils.o mpegts_packet.o args.o mpegts_pat.o features.o
-	gcc -g main.o mpegts_header.o utils.o mpegts_packet.o args.o mpegts_pat.o features.o -o jjstream
+jjstream: main.o mpegts_header.o utils.o mpegts_packet.o args.o mpegts_pat.o features.o misb.o
+	gcc -g main.o mpegts_header.o utils.o mpegts_packet.o args.o mpegts_pat.o features.o misb.o -o jjstream
 
 clean:
 	rm *.o
